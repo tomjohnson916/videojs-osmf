@@ -2,48 +2,45 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>video.js OSMF Plugin Example</title>
-
-  <!-- Video.JS -->
+  <title>Video.JS OSMF Example</title>
+  <!-- Video.JS: Core -->
   <link href="node_modules/video.js/dist/video-js/video-js.css" rel="stylesheet">
-  <script src="node_modules/video.js/dist/video-js/video.js"></script>
-
-  <!-- HLS plugin -->
-  <script src="src/videojs-hls.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-    .info {
-      background-color: #eee;
-      border: thin solid #333;
-      border-radius: 3px;
-      padding: 0 5px;
-    }
-  </style>
-
+  <script src="node_modules/video.js/dist/video-js/video.dev.js"></script>
+  <!-- VJS: Media Sources -->
+  <script src="node_modules/videojs-contrib-hls/node_modules/videojs-contrib-media-sources/src/videojs-media-sources.js"></script>
+  <!-- VJS: HLS -->
+  <script src="node_modules/videojs-contrib-hls/dist/videojs.hls.js"></script>
+  <!-- VJS: OSMF -->
+  <script src="src/js/videojs-osmf-controller.js"></script>
 </head>
 <body>
-<div class="info">
-  <p>The video below is an <a href="https://developer.apple.com/library/ios/documentation/networkinginternet/conceptual/streamingmediaguide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008332-CH1-SW1">HTTP Live Stream</a>. On desktop browsers other than Safari, the HLS plugin will polyfill support for the format on top of the video.js Flash tech.</p>
-  <p>Due to security restrictions in Flash, you will have to load this page over HTTP(S) to see the example in action.</p>
-</div>
 <video id="video"
        class="video-js vjs-default-skin"
        height="300"
        width="600"
        controls>
   <source
-    src="http://solutions.brightcove.com/jwhisenant/hls/apple/bipbop/bipbopall.m3u8"
-    type="application/x-mpegURL">
+    src="http://multiplatform-f.akamaihd.net/z/multi/companion/bourne_ultimatum/The Bourne Ultimatum - Trailer_,300,600,800,1000,1500,2500,4000,k.mp4.csmil/manifest.f4m?hdcore"
+    type="application/adobe-f4m">
 </video>
+
+<!--
+GOAL SOURCE
+<source
+  src="http://multiplatform-f.akamaihd.net/z/multi/companion/bourne_ultimatum/The Bourne Ultimatum - Trailer_,300,600,800,1000,1500,2500,4000,k.mp4.csmil/manifest.f4m?hdcore"
+  type="application/adobe-f4m">
+
+HLS SOURCE
+<source
+  src="http://solutions.brightcove.com/jwhisenant/hls/apple/bipbop/bipbopall.m3u8"
+  type="application/x-mpegURL">
+-->
+
 <script>
-  videojs.options.flash.swf = 'node_modules/video.js/dist/video-js/video-js.swf';
+  videojs.options.flash.swf = 'dist/videojs-osmf.swf' //'node_modules/video.js/dist/video-js/video-js.swf';
+
   // initialize the player
-  var player = videojs('video', {
-    techOrder: ['hls']
-  });
+  var player = videojs('video');
 </script>
 </body>
 </html>
