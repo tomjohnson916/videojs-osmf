@@ -37,7 +37,10 @@ HLS SOURCE
 -->
 
 <script>
-  videojs.options.flash.swf = 'dist/videojs-osmf.swf' //'node_modules/video.js/dist/video-js/video-js.swf';
+  // Set traditional SWF
+  videojs.options.flash.swf = 'node_modules/video.js/dist/video-js/video-js.swf';
+
+  videojs.options.osmf.swf = 'dist/videojs-osmf.swf';
 
   // initialize the player
   var player = videojs('video');

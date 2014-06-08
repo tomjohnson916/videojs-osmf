@@ -11,13 +11,22 @@
 videojs.Osmf = videojs.Flash.extend({
   init: function(player, options, ready) {
     videojs.log('init OSMF controller');
-    videojs.log(options.source);
 
-    var source = options.source;
+    var source, settings;
 
+    source = options.source;
+    settings = player.options();
+
+    player.osmf = this;
     delete options.source;
+    options.swf = settings.osmf.swf;
 
-    //videojs.Flash.call(this, player, options, ready);
+    console.log(options);
+
+    videojs.Flash.call(this, player, options, ready);
+    options.source = source;
+
+    //videojs.Hls.prototype.src.call(this, options.source && options.source.src);
 
   }
 });
@@ -50,5 +59,5 @@ videojs.Osmf.canPlaySource = function(srcObj){
 // TODO: Remove this because HLS should be doing this as well.
 videojs.options.techOrder.push('hls');
 //
-
+videojs.options.osmf = {};
 videojs.options.techOrder.push('osmf');
