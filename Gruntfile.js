@@ -197,6 +197,16 @@ module.exports = function(grunt) {
   grunt.registerTask('default', ['clean', 'jshint', 'qunit', 'concat', 'uglify']);
   grunt.registerTask('dev', 'Launching Dev Environment', 'concurrent:dev');
 
+  grunt.registerTask('build', ['copy-config-xml', 'mxmlc']);
+
+  grunt.registerTask('copy-config-xml', function() {
+    console.log('copy config xml');
+    var fs = require('fs');
+
+    console.log(fs.existsSync('test-config.xml'));
+
+  });
+
   grunt.registerMultiTask('mxmlc', 'Compiling SWF', function () {
     // Merge task-specific and/or target-specific options with these defaults.
     var childProcess = require('child_process');
@@ -211,15 +221,6 @@ module.exports = function(grunt) {
       q,
       workerFn,
       cmdLineOpts;
-
-    //Load Config File
-    childProcess.execFile(flexSdk.bin.mxmlc, 'load-config test-config.xml', function(err, stdout, stderr) {
-      if(err) {
-        grunt.log.writeln('!Error Loading');
-        console.log(err);
-      }
-      grunt.log.writeln('- Loaded -');
-    });
 
     workerFn = function(f, callback) {
       // Concat specified files.
@@ -255,11 +256,6 @@ module.exports = function(grunt) {
 
 
       ///Users/tjohnson/Developer/brightcove/videojs-osmf/node_modules/flex-sdk/lib/flex_sdk/frameworks/libs/osmf.swc
-
-      grunt.log.writeln('--');
-      grunt.log.writeln('- Load Config File -');
-      grunt.log.writeln('--');
-
 
       // Compile!
       childProcess.execFile(flexSdk.bin.mxmlc, cmdLineOpts, function(err, stdout, stderr) {
