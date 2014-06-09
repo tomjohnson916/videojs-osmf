@@ -29,20 +29,14 @@ GOAL SOURCE
 <source
   src="http://multiplatform-f.akamaihd.net/z/multi/companion/bourne_ultimatum/The Bourne Ultimatum - Trailer_,300,600,800,1000,1500,2500,4000,k.mp4.csmil/manifest.f4m?hdcore"
   type="application/adobe-f4m">
-
-HLS SOURCE
-<source
-  src="http://solutions.brightcove.com/jwhisenant/hls/apple/bipbop/bipbopall.m3u8"
-  type="application/x-mpegURL">
 -->
 
 <script>
-  // Set traditional SWF
+  // Set Regular VideoJS SWF
   videojs.options.flash.swf = 'node_modules/video.js/dist/video-js/video-js.swf';
-
+  // Set OSMF SWF
   videojs.options.osmf.swf = 'dist/videojs-osmf.swf';
-
-  // initialize the player
+  // Initialize the player
   var player = videojs('video');
 </script>
 </body>

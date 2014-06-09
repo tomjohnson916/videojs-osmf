@@ -21,8 +21,6 @@
 *****************************************************/
 package org.osmf.elements.f4mClasses
 {
-	import mx.states.OverrideBase;
-
 	[ExcludeClass]
 	
 	/**

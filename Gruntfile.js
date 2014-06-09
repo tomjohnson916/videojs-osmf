@@ -19,6 +19,11 @@ for (var k in interfaces) {
 module.exports = function(grunt) {
   grunt.initConfig({
     ipAddress: ipAddress,
+    shell: {
+      hello: {
+        command: '/Users/tjohnson/Developer/brightcove/videojs-osmf/node_modules/flex-sdk/lib/flex_sdk/bin/mxmlc -load-config test-config.xml src/as/VideoJSOSMF.as -output dist/videojs-osmf.swf'
+      }
+    },
     connect: {
       dev: {
         options: {
@@ -143,7 +148,7 @@ module.exports = function(grunt) {
     },
     watch: {
       as: {
-        files: ['src/as/**/*.as'],
+        files: ['src/as/**/*.*'],
         tasks: ['mxmlc']
       },
       js: {
@@ -191,6 +196,7 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('default', ['clean', 'jshint', 'qunit', 'concat', 'uglify']);
   grunt.registerTask('dev', 'Launching Dev Environment', 'concurrent:dev');
+
   grunt.registerMultiTask('mxmlc', 'Compiling SWF', function () {
     // Merge task-specific and/or target-specific options with these defaults.
     var childProcess = require('child_process');
@@ -203,7 +209,17 @@ module.exports = function(grunt) {
       done = this.async(),
       maxConcurrency = 1,
       q,
-      workerFn;
+      workerFn,
+      cmdLineOpts;
+
+    //Load Config File
+    childProcess.execFile(flexSdk.bin.mxmlc, 'load-config test-config.xml', function(err, stdout, stderr) {
+      if(err) {
+        grunt.log.writeln('!Error Loading');
+        console.log(err);
+      }
+      grunt.log.writeln('- Loaded -');
+    });
 
     workerFn = function(f, callback) {
       // Concat specified files.
@@ -218,21 +234,17 @@ module.exports = function(grunt) {
         }
       });
 
-      var cmdLineOpts = [];
+      cmdLineOpts = [];
+      cmdLineOpts.push('-output');
+      cmdLineOpts.push(f.dest);
 
-      if (f.dest) {
-        cmdLineOpts.push('-output');
-        cmdLineOpts.push(f.dest);
-      }
-
-      // Test
       cmdLineOpts.push('-static-link-runtime-shared-libraries=true');
-      //cmdLineOpts.push('-library-path=libs/playerglobal.swc');
+      cmdLineOpts.push('-define=CONFIG::VERSION,"' + pkg.version + '"' );
       cmdLineOpts.push('-define=CONFIG::FLASH_10_1,true');
-      cmdLineOpts.push('-define=CONFIG::LOGGING,true');
+      cmdLineOpts.push('-define=CONFIG::LOGGING,false');
       cmdLineOpts.push('-define=CONFIG::PLATFORM,true');
       cmdLineOpts.push('-define=CONFIG::MOCK,false');
-      cmdLineOpts.push('-debug=true');
+      cmdLineOpts.push('-debug=false');
 
       cmdLineOpts.push('--');
       cmdLineOpts.push.apply(cmdLineOpts, srcList);
@@ -240,6 +252,14 @@ module.exports = function(grunt) {
       grunt.log.writeln('package version: ' + pkg.version);
       grunt.log.writeln('mxmlc path: ' + flexSdk.bin.mxmlc);
       grunt.log.writeln('options: ' + JSON.stringify(cmdLineOpts));
+
+
+      ///Users/tjohnson/Developer/brightcove/videojs-osmf/node_modules/flex-sdk/lib/flex_sdk/frameworks/libs/osmf.swc
+
+      grunt.log.writeln('--');
+      grunt.log.writeln('- Load Config File -');
+      grunt.log.writeln('--');
+
 
       // Compile!
       childProcess.execFile(flexSdk.bin.mxmlc, cmdLineOpts, function(err, stdout, stderr) {
@@ -267,5 +287,4 @@ module.exports = function(grunt) {
     q.drain = done;
     q.push(this.files);
   });
-
 };

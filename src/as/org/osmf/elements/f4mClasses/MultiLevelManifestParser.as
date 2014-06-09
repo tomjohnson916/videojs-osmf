@@ -28,9 +28,7 @@ package org.osmf.elements.f4mClasses
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
 	import flash.utils.describeType;
-	
-	import mx.messaging.channels.StreamingAMFChannel;
-	
+
 	import org.osmf.events.ParseEvent;
 	import org.osmf.net.httpstreaming.HTTPStreamingUtils;
 	import org.osmf.utils.URL;

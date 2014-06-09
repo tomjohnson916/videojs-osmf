@@ -4,7 +4,8 @@
   "description": "A Video.js media controller for OSMF",
   "main": "videojs-osmf.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "cd node_modules/videojs-contrib-hls && npm install && grunt clean && grunt concat && grunt uglify"
   },
   "author": "",
   "license": "Apache",

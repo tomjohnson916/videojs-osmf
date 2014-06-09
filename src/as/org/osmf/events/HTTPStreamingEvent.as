@@ -128,7 +128,7 @@ package org.osmf.events
 				scriptDataMode:String = FLVTagScriptDataMode.NORMAL,
 				url:String = null,
 				bytesDownloaded:uint = 0,
-				reason:String = HTTPStreamingEventReason.NORMAL,
+				reason:String = 'normal',
 				downloader:HTTPStreamDownloader = null
 				)
 		{

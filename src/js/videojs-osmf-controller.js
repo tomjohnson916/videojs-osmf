@@ -10,23 +10,26 @@
  */
 videojs.Osmf = videojs.Flash.extend({
   init: function(player, options, ready) {
-    videojs.log('init OSMF controller');
-
     var source, settings;
 
     source = options.source;
     settings = player.options();
 
     player.osmf = this;
-    delete options.source;
-    options.swf = settings.osmf.swf;
 
-    console.log(options);
+    console.log(source);
+
+    options.swf = settings.osmf.swf;
+    options.flashVars = {
+      'playerId': player.id_,
+      'readyFunction': 'videojs.Osmf.onReady',
+      'eventProxyFunction': 'videojs.Osmf.onEvent',
+      'errorEventProxyFunction': 'videojs.Osmf.onError'
+    };
 
     videojs.Flash.call(this, player, options, ready);
-    options.source = source;
 
-    //videojs.Hls.prototype.src.call(this, options.source && options.source.src);
+    options.source = source;
 
   }
 });
@@ -56,8 +59,20 @@ videojs.Osmf.canPlaySource = function(srcObj){
   }
 };
 
-// TODO: Remove this because HLS should be doing this as well.
-videojs.options.techOrder.push('hls');
-//
+// Event Handlers
+videojs.Osmf.onReady = function(event) {
+  videojs.log('OSMF', 'Ready', event);
+  player.trigger('ready');
+};
+videojs.Osmf.onError = function(event) {
+  videojs.log('OSMF', 'Error', event);
+};
+videojs.Osmf.onEvent = function(event) {
+  videojs.log('OSMF', 'Event', event);
+};
+
+// Setup a base object for osmf configuration
 videojs.options.osmf = {};
+
+// Add OSMF to the standard tech order
 videojs.options.techOrder.push('osmf');
