@@ -42,7 +42,8 @@ import org.osmf.utils.Version;
 
   [SWF(backgroundColor="#FF0000", frameRate="60", width="480", height="270")]
   public class VideoJSOSMF extends Sprite {
-    public static const VERSION:String = CONFIG::Version;
+    public static const VERSION:String = 'unknown';
+
     public static const OSMF_VERSION:String = Version.version;
     public static const ALLOWED_DOMAINS:Array = ['*'];
     public static const ALLOWED_INSECURE_DOMAINS:Array = ALLOWED_DOMAINS;
@@ -64,7 +65,6 @@ import org.osmf.utils.Version;
       createLayoutMetadata();
       createMediaPlayer();
       createMediaContainer();
-      createMediaElement();
       ready();
     }
 
@@ -276,9 +276,9 @@ import org.osmf.utils.Version;
 
     }
 
-    protected function onMediaElementEvent( event:MediaElementEvent ):void
+    protected function onMediaElementEvent(event:MediaElementEvent):void
     {
-      switch( event.type )
+      switch(event.type)
       {
         case MediaElementEvent.METADATA_ADD:
           Console.log('MetaData Add');
