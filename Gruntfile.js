@@ -96,7 +96,7 @@ module.exports = function(grunt) {
   require('load-grunt-tasks')(grunt);
 
   // Default task.
-  grunt.registerTask('default', ['clean', 'jshint', 'qunit', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'build', 'concat', 'uglify']);
   grunt.registerTask('dev', 'Launching Dev Environment', ['build','concurrent:dev']);
   grunt.registerTask('build', ['shell:mxmlc']);
 
