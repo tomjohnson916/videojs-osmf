@@ -16,9 +16,6 @@ videojs.Osmf = videojs.Flash.extend({
     settings = player.options();
 
     player.osmf = this;
-
-    console.log(source);
-
     options.swf = settings.osmf.swf;
     options.flashVars = {
       'playerId': player.id_,
@@ -33,6 +30,58 @@ videojs.Osmf = videojs.Flash.extend({
 
   }
 });
+
+// API
+videojs.Osmf.prototype.play = function(){
+  videojs.log('PLAY ME PLAYA');
+  this.el_.vjs_play();
+  player.trigger('firstplay');
+};
+
+videojs.Osmf.prototype.buffered = function(){
+  return videojs.createTimeRange(0, this.el_.vjs_getProperty('buffered'));
+};
+
+// Create setters and getters for attributes
+var api = videojs.Osmf.prototype,
+  readWrite = 'preload,defaultPlaybackRate,playbackRate,autoplay,loop,mediaGroup,controller,controls,volume,muted,defaultMuted'.split(','),
+  readOnly = 'error,networkState,readyState,seeking,initialTime,duration,startOffsetTime,paused,played,seekable,ended,videoTracks,audioTracks,videoWidth,videoHeight,textTracks'.split(',');
+// Overridden: buffered, currentTime, currentSrc
+
+/**
+ * @this {*}
+ * @private
+ */
+var createSetter = function(attr){
+  console.log('create setter', attr);
+  var attrUpper = attr.charAt(0).toUpperCase() + attr.slice(1);
+  api['set'+attrUpper] = function(val){ return this.el_.vjs_setProperty(attr, val); };
+};
+
+/**
+ * @this {*}
+ * @private
+ */
+var createGetter = function(attr){
+  api[attr] = function(){
+    console.log('create getter', attr);
+    return this.el_.vjs_getProperty(attr);
+  };
+};
+
+(function(){
+  var i;
+  // Create getter and setters for all read/write attributes
+  for (i = 0; i < readWrite.length; i++) {
+    createGetter(readWrite[i]);
+    createSetter(readWrite[i]);
+  }
+
+  // Create getters for read-only attributes
+  for (i = 0; i < readOnly.length; i++) {
+    createGetter(readOnly[i]);
+  }
+})();
 
 videojs.Osmf.formats = {
   'application/adobe-f4m': 'F4M',
@@ -60,9 +109,9 @@ videojs.Osmf.canPlaySource = function(srcObj){
 };
 
 // Event Handlers
-videojs.Osmf.onReady = function(event) {
-  videojs.log('OSMF', 'Ready', event);
-  player.trigger('ready');
+videojs.Osmf.onReady = function(currentSwf) {
+  videojs.log('OSMF', 'Ready', currentSwf);
+  videojs.Flash.onReady(currentSwf);
 };
 videojs.Osmf.onError = function(event) {
   videojs.log('OSMF', 'Error', event);
@@ -70,6 +119,16 @@ videojs.Osmf.onError = function(event) {
 videojs.Osmf.onEvent = function(event) {
   videojs.log('OSMF', 'Event', event);
 };
+
+//
+videojs.Osmf.prototype.supportsFullScreen = function(){
+  return false; // Flash does not allow fullscreen through javascript
+};
+
+videojs.Osmf.prototype.enterFullScreen = function(){
+  return false;
+};
+
 
 // Setup a base object for osmf configuration
 videojs.options.osmf = {};

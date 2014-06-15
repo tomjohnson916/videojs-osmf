@@ -17,7 +17,7 @@ public final class Console {
     try {
       if (USE_CONSOLE) {
         var currentTime:Number = new Date().time;
-        var args:Array = ["window.console." + method, currentTime.toString() + " " + CONSOLE_REFERENCE],
+        var args:Array = ["window.console." + method, CONSOLE_REFERENCE],
           i:uint = 0, count:uint,
           nativeTypes:Array = ["boolean", "number", "string"];
 
