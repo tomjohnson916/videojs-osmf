@@ -43,6 +43,7 @@ import org.osmf.utils.Version;
 
 /*
   TODO: Player should be first on this one.
+  [Player]
 
  1. Create Resource
  2. Create Factory
@@ -134,7 +135,7 @@ public class VideoJSOSMF extends Sprite {
 
   private function dispatchExternalEvent(type:String, data:Object = null):void {
     if (loaderInfo.parameters['eventProxyFunction']) {
-      ExternalInterface.call(loaderInfo.parameters['eventProxyFunction'], type);
+      ExternalInterface.call(loaderInfo.parameters['eventProxyFunction'], ExternalInterface.objectID, type);
     }
   }
 

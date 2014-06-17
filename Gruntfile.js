@@ -38,7 +38,7 @@ module.exports = function(grunt) {
     },
     watch: {
       as: {
-        files: ['src/as/**/*.*'],
+        files: ['src/as/**/*.as'],
         tasks: ['shell:mxmlc']
       },
       grunt: {

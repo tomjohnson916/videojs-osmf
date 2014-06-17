@@ -33,7 +33,7 @@ videojs.Osmf = videojs.Flash.extend({
 
 // Create setters and getters for attributes
 var api = videojs.Osmf.prototype,
-  readWrite = 'preload,defaultPlaybackRate,playbackRate,autoplay,loop,mediaGroup,controller,controls,volume,muted,defaultMuted'.split(','),
+  readWrite = 'currentTime,preload,defaultPlaybackRate,playbackRate,autoplay,loop,mediaGroup,controller,controls,volume,muted,defaultMuted'.split(','),
   readOnly = 'error,networkState,readyState,seeking,initialTime,duration,startOffsetTime,paused,played,seekable,ended,videoTracks,audioTracks,videoWidth,videoHeight,textTracks'.split(',');
 // Overridden: buffered, currentTime, currentSrc
 
@@ -52,8 +52,8 @@ var createSetter = function(attr){
  * @private
  */
 var createGetter = function(attr){
+  console.log('create getter', attr);
   api[attr] = function(){
-    console.log('create getter', attr);
     return this.el_.vjs_getProperty(attr);
   };
 };
@@ -73,6 +73,8 @@ var createGetter = function(attr){
 })();
 
 // API Overrides
+
+
 videojs.Osmf.prototype.play = function(){
   videojs.log('PLAY ME PLAYA');
 };
