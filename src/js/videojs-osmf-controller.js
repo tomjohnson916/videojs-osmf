@@ -31,17 +31,6 @@ videojs.Osmf = videojs.Flash.extend({
   }
 });
 
-// API
-videojs.Osmf.prototype.play = function(){
-  videojs.log('PLAY ME PLAYA');
-  this.el_.vjs_play();
-  player.trigger('firstplay');
-};
-
-videojs.Osmf.prototype.buffered = function(){
-  return videojs.createTimeRange(0, this.el_.vjs_getProperty('buffered'));
-};
-
 // Create setters and getters for attributes
 var api = videojs.Osmf.prototype,
   readWrite = 'preload,defaultPlaybackRate,playbackRate,autoplay,loop,mediaGroup,controller,controls,volume,muted,defaultMuted'.split(','),
@@ -83,6 +72,15 @@ var createGetter = function(attr){
   }
 })();
 
+// API Overrides
+videojs.Osmf.prototype.play = function(){
+  videojs.log('PLAY ME PLAYA');
+};
+
+videojs.Osmf.prototype.buffered = function(){
+  return videojs.createTimeRange(0, this.el_.vjs_getProperty('buffered'));
+};
+
 videojs.Osmf.formats = {
   'application/adobe-f4m': 'F4M',
   'application/adobe-f4v': 'F4V'
@@ -113,11 +111,13 @@ videojs.Osmf.onReady = function(currentSwf) {
   videojs.log('OSMF', 'Ready', currentSwf);
   videojs.Flash.onReady(currentSwf);
 };
-videojs.Osmf.onError = function(event) {
-  videojs.log('OSMF', 'Error', event);
+videojs.Osmf.onError = function(currentSwf, err) {
+  videojs.log('OSMF', 'Error', err);
+  videojs.Flash.onError(currentSwf, err);
 };
-videojs.Osmf.onEvent = function(event) {
+videojs.Osmf.onEvent = function(currentSwf, event) {
   videojs.log('OSMF', 'Event', event);
+  videojs.Flash.onEvent(currentSwf, event);
 };
 
 //

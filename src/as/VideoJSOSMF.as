@@ -120,29 +120,20 @@ public class VideoJSOSMF extends Sprite {
 
   private function registerExternalModel():void {
     for (var i:* in loaderInfo.parameters) {
-      ExternalInterface.call('window.console.log', 'name:', i, loaderInfo.parameters[i]);
+      Console.log('name:', i, loaderInfo.parameters[i]);
     }
   }
 
   private function ready():void {
-    Console.log('READY Notify');
-    Console.log(stage.stageWidth, 'x', stage.stageHeight);
-
     if (loaderInfo.parameters['readyFunction']) {
       ExternalInterface.call(loaderInfo.parameters['readyFunction'], ExternalInterface.objectID);
     }
-
-    if (loaderInfo.parameters['autoplay']
-      && loaderInfo.parameters['autoplay'].toLowerCase() == 'true'
-      && loaderInfo.parameters['src']
-      && loaderInfo.parameters['src'].length > 0) {
-      onSrcCalled(loaderInfo.parameters['src']);
-    }
-
   }
 
   private function dispatchExternalEvent(type:String, data:Object = null):void {
-
+    if (loaderInfo.parameters['eventProxyFunction']) {
+      ExternalInterface.call(loaderInfo.parameters['eventProxyFunction'], type);
+    }
   }
 
   private function createMediaPlayer():void {
@@ -220,6 +211,7 @@ public class VideoJSOSMF extends Sprite {
     _mediaContainer.addEventListener(LayoutTargetEvent.ADD_CHILD_AT, onLayoutTargetEvent);
     _mediaContainer.width = 600;
     _mediaContainer.height = 300;
+    _mediaContainer.backgroundColor = 0xFFCC00;
 
     addChild(_mediaContainer);
   }
@@ -274,6 +266,7 @@ public class VideoJSOSMF extends Sprite {
 
   private function onMediaPlayerStateChangeEvent(event:MediaPlayerStateChangeEvent):void {
     Console.log('onMediaPlayerStateChangeEvent', event.toString());
+    dispatchExternalEvent(event.state);
     switch (event.state) {
       case MediaPlayerState.BUFFERING:
         break;
