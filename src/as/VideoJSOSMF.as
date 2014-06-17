@@ -42,6 +42,8 @@ import org.osmf.utils.TimeUtil;
 import org.osmf.utils.Version;
 
 /*
+  TODO: Player should be first on this one.
+
  1. Create Resource
  2. Create Factory
  3. Create Layout Metadata
@@ -54,7 +56,7 @@ import org.osmf.utils.Version;
 [SWF(backgroundColor="#FF0000", frameRate="60", width="480", height="270")]
 public class VideoJSOSMF extends Sprite {
 
-  public static const VERSION:String = 'unknown';
+  public static const VERSION:String = (CONFIG::VERSION) ? CONFIG::VERSION.toString() : ' unknown';
   public static const OSMF_VERSION:String = Version.version;
   public static const ALLOWED_DOMAINS:Array = ['*'];
   public static const ALLOWED_INSECURE_DOMAINS:Array = ALLOWED_DOMAINS;

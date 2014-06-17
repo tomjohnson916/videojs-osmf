@@ -4,14 +4,13 @@
   "description": "A Video.js media controller for OSMF",
   "main": "videojs-osmf.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "cd node_modules/videojs-contrib-hls && npm install && grunt clean && grunt concat && grunt uglify"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "Apache",
   "devDependencies": {
     "async": "~0.2.9",
-    "video.js": "~4.6.1",
+    "video.js": "~4.6.2",
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.6.0",
     "grunt-contrib-qunit": "~0.2.0",
@@ -23,8 +22,6 @@
     "grunt-open": "0.2.3",
     "grunt-shell": "0.6.1",
     "grunt-concurrent": "0.4.3",
-    "load-grunt-tasks": "~0.4.0",
-    "flex-sdk": "4.6.0-0",
-    "videojs-contrib-hls": "~0.7.1"
+    "load-grunt-tasks": "~0.4.0"
   }
 }
