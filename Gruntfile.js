@@ -1,22 +1,7 @@
 'use strict';
 
-var os = require('os');
-var interfaces = os.networkInterfaces();
-var ipAddress;
-
-for (var k in interfaces) {
-  for (var k2 in interfaces[k]) {
-    var address = interfaces[k][k2];
-    if (address.family == 'IPv4' && !address.internal) {
-      ipAddress = address.address;
-      break;
-    }
-  }
-}
-
 module.exports = function(grunt) {
   grunt.initConfig({
-    ipAddress: ipAddress,
     pkg: grunt.file.readJSON('package.json'),
     swf: {
       src: 'src/as/VideoJSOSMF.as',
