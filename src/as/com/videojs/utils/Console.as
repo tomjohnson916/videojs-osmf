@@ -4,7 +4,7 @@ import flash.external.ExternalInterface;
 import flash.utils.describeType;
 
 public final class Console {
-  private static const USE_CONSOLE:Boolean = true;
+  private static const USE_CONSOLE:Boolean = false;
   private static const CONSOLE_REFERENCE:String = "OSMF_Tech";
   /**
    Call the JS console API

@@ -77,6 +77,7 @@ public class VideoJSOSMF extends Sprite {
     initializeSecurity();
     registerExternalMethods();
     registerExternalModel();
+    createMediaPlayer();
     ready();
   }
 
@@ -104,8 +105,9 @@ public class VideoJSOSMF extends Sprite {
   }
 
   private function registerExternalMethods():void {
-    ExternalInterface.addCallback('streamStatus', streamStatus);
+    Console.log('Register External Methods');
 
+    ExternalInterface.addCallback('streamStatus', streamStatus);
     ExternalInterface.addCallback('vjs_echo', onEchoCalled);
     ExternalInterface.addCallback('vjs_endOfStream', onEndOfStreamCalled);
     ExternalInterface.addCallback('vjs_abort', onAbortCalled);
@@ -119,9 +121,11 @@ public class VideoJSOSMF extends Sprite {
     ExternalInterface.addCallback('vjs_resume', onResumeCalled);
     ExternalInterface.addCallback('vjs_stop', onStopCalled);
 
-  }
+    ExternalInterface.addCallback('vjs_paused', onPausedCalled);
+ }
 
   private function registerExternalModel():void {
+    Console.log('Register External Model');
     for (var i:* in loaderInfo.parameters) {
       Console.log('name:', i, loaderInfo.parameters[i]);
     }
@@ -142,7 +146,7 @@ public class VideoJSOSMF extends Sprite {
   private function createMediaPlayer():void {
     Console.log('Create MediaPlayer');
     _mediaPlayer = new MediaPlayer();
-    _mediaPlayer.autoPlay = false;
+    _mediaPlayer.autoPlay = loaderInfo.parameters['autoplay'];
     _mediaPlayer.autoRewind = false;
     _mediaPlayer.loop = false;
     _mediaPlayer.currentTimeUpdateInterval = 100;
@@ -269,28 +273,25 @@ public class VideoJSOSMF extends Sprite {
 
   private function onMediaPlayerStateChangeEvent(event:MediaPlayerStateChangeEvent):void {
     Console.log('onMediaPlayerStateChangeEvent', event.toString());
-    dispatchExternalEvent(event.state);
     switch (event.state) {
-      case MediaPlayerState.BUFFERING:
-        break;
-
       case MediaPlayerState.PLAYING:
+        dispatchExternalEvent('play');
+        if(!_firstPlayTriggered){
+          _firstPlayTriggered = true;
+          dispatchExternalEvent('firstplay');
+        }
         break;
-
-      case MediaPlayerState.PLAYBACK_ERROR:
-        break;
-
-      case MediaPlayerState.READY:
-        break;
-
-      case MediaPlayerState.LOADING:
-        break;
-
-      case MediaPlayerState.UNINITIALIZED:
-        break;
-
       case MediaPlayerState.PAUSED:
+        dispatchExternalEvent('pause');
         break;
+      case MediaPlayerState.BUFFERING:
+      case MediaPlayerState.PLAYBACK_ERROR:
+      case MediaPlayerState.LOADING:
+      case MediaPlayerState.UNINITIALIZED:
+        dispatchExternalEvent(event.state);
+        break;
+
+
     }
   }
 
@@ -303,8 +304,18 @@ public class VideoJSOSMF extends Sprite {
   }
 
   private function onTimeEvent(event:TimeEvent):void {
-    if (event.type != TimeEvent.CURRENT_TIME_CHANGE) {
-      Console.log('onTimeEvent', event.toString());
+    switch(event.type) {
+      case TimeEvent.COMPLETE:
+        dispatchExternalEvent('ended');
+        break;
+
+      case TimeEvent.CURRENT_TIME_CHANGE:
+        dispatchExternalEvent('timeupdate');
+        break;
+
+      case TimeEvent.DURATION_CHANGE:
+        dispatchExternalEvent('durationchange');
+        break;
     }
   }
 
@@ -408,6 +419,7 @@ public class VideoJSOSMF extends Sprite {
   }
 
   private function onGetPropertyCalled(pPropertyName:String):* {
+    //Console.log('Get Prop Called', pPropertyName);
     switch (pPropertyName) {
       case 'seeking':
         return (_mediaPlayer) ? _mediaPlayer.seeking : false;
@@ -430,7 +442,7 @@ public class VideoJSOSMF extends Sprite {
         break;
 
       case 'buffered':
-        return (_mediaPlayer) ? _mediaPlayer.bufferTime : 0;
+        return (_mediaPlayer) ? +_mediaPlayer.currentTime + _mediaPlayer.bufferTime : 0;
         break;
 
       default:
@@ -441,7 +453,9 @@ public class VideoJSOSMF extends Sprite {
   }
 
   private function onSetPropertyCalled(pPropertyName:String = "", pValue:* = null):void {
-    Console.log('VJS SET Property Called', pPropertyName);
+    Console.log('');
+    Console.log('Set Prop Called', pPropertyName);
+    Console.log('');
     var _app:Object = {model: {}};
 
     switch (pPropertyName) {
@@ -475,7 +489,7 @@ public class VideoJSOSMF extends Sprite {
         onSrcCalled(pValue);
         break;
       case "currentTime":
-        _app.model.seekBySeconds(Number(pValue));
+        _mediaPlayer.seek(Number(pValue));
         break;
       case "currentPercent":
         _app.model.seekByPercent(Number(pValue));
@@ -500,25 +514,30 @@ public class VideoJSOSMF extends Sprite {
   }
 
   private function onLoadCalled(src:String):void {
-
+    Console.log('Load called on OSMF', src);
   }
 
   private function onPlayCalled():void {
+    Console.log('Play called on OSMF');
     _mediaPlayer.play();
   }
 
-  private function onPauseCalled(src:String):void {
-
+  private function onPauseCalled():void {
+    Console.log('Pause called on OSMF');
+    _mediaPlayer.pause();
   }
 
-  private function onResumeCalled(src:String):void {
-
+  private function onPausedCalled():Boolean {
+    Console.log('Paused called on OSMF');
+    return _mediaPlayer.paused;
   }
 
-  private function onStopCalled(src:String):void {
-
+  private function onResumeCalled():void {
+    Console.log('Resume called on OSMF');
   }
 
+  private function onStopCalled():void {
 
+  }
 }
 }
