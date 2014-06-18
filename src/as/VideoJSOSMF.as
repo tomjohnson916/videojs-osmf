@@ -197,7 +197,7 @@ public class VideoJSOSMF extends Sprite {
   private function createLayoutMetadata():void {
     Console.log('Create LayoutMetadata');
     _layoutMetadata = new LayoutMetadata();
-    _layoutMetadata.scaleMode = ScaleMode.LETTERBOX;
+    _layoutMetadata.scaleMode = ScaleMode.STRETCH;
     _layoutMetadata.percentWidth = 100;
     _layoutMetadata.percentHeight = 100;
     _layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
@@ -210,26 +210,29 @@ public class VideoJSOSMF extends Sprite {
     _mediaContainer.mouseEnabled = true;
     _mediaContainer.clipChildren = true;
     _mediaContainer.addEventListener(LayoutTargetEvent.ADD_CHILD_AT, onLayoutTargetEvent);
-    _mediaContainer.width = 600;
-    _mediaContainer.height = 300;
-    _mediaContainer.backgroundColor = 0xFFCC00;
+    _mediaContainer.width = stage.stageWidth;
+    _mediaContainer.height = stage.stageHeight;
 
     addChild(_mediaContainer);
   }
 
-  public function streamStatus():void {
+  public function streamStatus():String {
+    var returnValue = "";
     if (_mediaPlayer && _mediaPlayer.isDynamicStream) {
-      Console.log("==== Stream Status ====");
-      Console.log("Auto Mode", _mediaPlayer.autoDynamicStreamSwitch);
-      Console.log("MP Current Index", _mediaPlayer.currentDynamicStreamIndex);
-      Console.log("MP Max Index", _mediaPlayer.maxAllowedDynamicStreamIndex);
-      Console.log("MP Resolution", _mediaPlayer.mediaHeight + "p");
-      Console.log("==== End Status ====");
+      returnValue = "==== Stream Status ====" +
+      "\nAuto Switching Mode: " + _mediaPlayer.autoDynamicStreamSwitch +
+      "\nPlaylist Current Index: " + _mediaPlayer.currentDynamicStreamIndex +
+      "\nPlaylist Max Index: " + _mediaPlayer.maxAllowedDynamicStreamIndex +
+      "\nCurrent Resolution: " + _mediaPlayer.mediaWidth + "x" + _mediaPlayer.mediaHeight +
+      "\nCurrent Bitrate: " + _mediaPlayer.getBitrateForDynamicStreamIndex(_mediaPlayer.currentDynamicStreamIndex) +
+      "\n==== End Status ====";
     } else if (!_mediaPlayer) {
-      Console.log("MediaPlayer Not Loaded");
+      returnValue = "MediaPlayer Not Loaded";
     } else {
-      Console.log("DST Not Loaded");
+      returnValue = "DST Not Loaded";
     }
+
+    return returnValue;
   }
 
   private function createResource(url:String):void {
@@ -269,19 +272,13 @@ public class VideoJSOSMF extends Sprite {
     Console.log('onMediaPlayerStateChangeEvent', event.toString());
     switch (event.state) {
       case MediaPlayerState.PLAYING:
-        dispatchExternalEvent('playing');
-        break;
       case MediaPlayerState.PAUSED:
-        dispatchExternalEvent('pause');
-        break;
       case MediaPlayerState.BUFFERING:
       case MediaPlayerState.PLAYBACK_ERROR:
       case MediaPlayerState.LOADING:
       case MediaPlayerState.UNINITIALIZED:
         dispatchExternalEvent(event.state);
         break;
-
-
     }
   }
 
@@ -343,6 +340,7 @@ public class VideoJSOSMF extends Sprite {
 
   private function onDynamicStreamEvent(event:DynamicStreamEvent):void {
     Console.log('onDynamicStreamEvent', event.toString());
+    dispatchExternalEvent(event.type);
   }
 
   private function onMediaErrorEvent(event:MediaErrorEvent):void {
@@ -529,6 +527,7 @@ public class VideoJSOSMF extends Sprite {
 
   private function onPauseCalled():void {
     Console.log('Pause called on OSMF');
+    dispatchExternalEvent('pause');
     _mediaPlayer.pause();
   }
 

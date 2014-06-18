@@ -32,6 +32,7 @@
       player.tech.firstplay = false;
       player.tech.loadstart = false;
       player.on('loadeddata', videojs.Osmf.onLoadedData);
+      player.on('ended', videojs.Osmf.onEnded);
 
       options.source = source;
     }
@@ -128,13 +129,33 @@ videojs.Osmf.prototype.currentTime = function(value) {
   }
 };
 
+videojs.Osmf.prototype.streamStatus = function() {
+  console.log('you would like status');
+  return this.el_.streamStatus();
+};
+
 
 // Event Handlers
   videojs.Osmf.onLoadedData = function() {
     // If autoplay, go
     if(player.options().autoplay) {
       player.play();
+    } else {
+      player.currentTime(0);
+      player.play();
+      player.pause();
+      player.bigPlayButton.show();
+      player.bigPlayButton.one('click', function() {
+        player.bigPlayButton.hide();
+      })
     }
+  };
+
+  videojs.Osmf.onEnded = function() {
+    if(player.options().loop) {
+      player.currentTime(0);
+    }
+    player.pause();
   };
 
   videojs.Osmf.onReady = function (currentSwf) {
