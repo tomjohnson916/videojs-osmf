@@ -4,6 +4,7 @@ import com.videojs.utils.Console;
 import flash.display.Sprite;
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
+import flash.events.Event;
 import flash.external.ExternalInterface;
 import flash.system.Security;
 import flash.ui.ContextMenu;
@@ -85,7 +86,7 @@ public class VideoJSOSMF extends Sprite {
     if (this.stage) {
       this.stage.scaleMode = StageScaleMode.NO_SCALE;
       this.stage.align = StageAlign.TOP_LEFT;
-
+      this.stage.addEventListener(Event.RESIZE, onStageResize);
     }
   }
 
@@ -262,6 +263,12 @@ public class VideoJSOSMF extends Sprite {
 
   private function onAudioEvent(event:AudioEvent):void {
     Console.log('onAudioEvent', event.toString());
+    switch (event.type) {
+      case AudioEvent.MUTED_CHANGE:
+      case AudioEvent.VOLUME_CHANGE:
+        dispatchExternalEvent('volumechange');
+        break;
+    }
   }
 
   private function onBufferEvent(event:BufferEvent):void {
@@ -456,7 +463,7 @@ public class VideoJSOSMF extends Sprite {
 
   private function onSetPropertyCalled(pPropertyName:String = "", pValue:* = null):void {
     Console.log('');
-    Console.log('Set Prop Called', pPropertyName);
+    Console.log('Set Prop Called', pPropertyName, pValue.toString() );
     Console.log('');
     var _app:Object = {model: {}};
 
@@ -497,10 +504,10 @@ public class VideoJSOSMF extends Sprite {
         _app.model.seekByPercent(Number(pValue));
         break;
       case "muted":
-        _app.model.muted = _app.model.humanToBoolean(pValue);
+        _mediaPlayer.muted = (pValue.toString() === 'true');
         break;
       case "volume":
-        _app.model.volume = Number(pValue);
+        _mediaPlayer.volume = pValue as Number;
         break;
       case "rtmpConnection":
         _app.model.rtmpConnectionURL = String(pValue);
@@ -544,15 +551,22 @@ public class VideoJSOSMF extends Sprite {
 
   }
 
+  private function onStageResize(event:Event):void {
+    if(_mediaContainer && stage) {
+      _mediaContainer.width = stage.stageWidth;
+      _mediaContainer.height = stage.stageHeight;
+    }
+  }
+
   // VideoJS Notifications
   private function dispatchExternalEvent(type:String, data:Object = null):void {
     if (loaderInfo.parameters['eventProxyFunction']) {
-      ExternalInterface.call(loaderInfo.parameters['eventProxyFunction'], ExternalInterface.objectID, type);
+      ExternalInterface.call(loaderInfo.parameters['eventProxyFunction'], ExternalInterface.objectID, type.toLowerCase());
     }
   }
   private function dispatchExternalErrorEvent(type:String, error:Object):void {
     if(loaderInfo.parameters['errorProxyFunction']) {
-      ExternalInterface.call(loaderInfo.parameters['errorProxyFunction'], ExternalInterface.objectID, type, error);
+      ExternalInterface.call(loaderInfo.parameters['errorProxyFunction'], ExternalInterface.objectID, type.toLowerCase(), error);
     }
   }
 
