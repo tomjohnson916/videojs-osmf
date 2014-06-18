@@ -29,6 +29,10 @@
 
       videojs.Flash.call(this, player, options, ready);
       player.tech = this;
+      player.tech.firstplay = false;
+      player.tech.loadstart = false;
+      player.on('loadeddata', videojs.Osmf.onLoadedData);
+
       options.source = source;
     }
   });
@@ -46,6 +50,41 @@
     readOnly = 'error,networkState,readyState,seeking,initialTime,duration,startOffsetTime,paused,played,seekable,ended,videoTracks,audioTracks,videoWidth,videoHeight,textTracks'.split(',');
   // Overridden: buffered, currentTime, currentSrc
 
+
+  /**
+   * @this {*}
+   * @private
+   */
+  var createSetter = function(attr){
+    var attrUpper = attr.charAt(0).toUpperCase() + attr.slice(1);
+    api['set'+attrUpper] = function(val){
+      return this.el_.vjs_setProperty(attr, val);
+    };
+  };
+
+  /**
+   * @this {*}
+   * @private
+   */
+  var createGetter = function(attr){
+    api[attr] = function(){
+      return this.el_.vjs_getProperty(attr);
+    };
+  };
+
+  (function(){
+    var i;
+    // Create getter and setters for all read/write attributes
+    for (i = 0; i < readWrite.length; i++) {
+      createGetter(readWrite[i]);
+      createSetter(readWrite[i]);
+    }
+
+    // Create getters for read-only attributes
+    for (i = 0; i < readOnly.length; i++) {
+      createGetter(readOnly[i]);
+    }
+  })();
 
 //
 
@@ -87,31 +126,65 @@ videojs.Osmf.prototype.currentTime = function(value) {
   } else {
     return this.el_.vjs_getProperty('currentTime');
   }
-
 };
 
 
 // Event Handlers
+  videojs.Osmf.onLoadedData = function() {
+    // If autoplay, go
+    if(player.options().autoplay) {
+      player.play();
+    }
+  };
+
   videojs.Osmf.onReady = function (currentSwf) {
     videojs.log('OSMF', 'Ready', currentSwf);
+
+    // Set the tech element
     this.el_ = document.getElementById(currentSwf);
+
+    // Tell Flash tech we are ready
     videojs.Flash.onReady(currentSwf);
+
+    // Source known on ready rule (i.e. load it)
     if(player.currentSrc() &&
       player.currentSrc().length > 0) {
       this.el_.vjs_src(player.currentSrc());
     }
   };
+
   videojs.Osmf.onError = function (currentSwf, err) {
     videojs.log('OSMF', 'Error', err);
     videojs.Flash.onError(currentSwf, err);
   };
+
   videojs.Osmf.onEvent = function (currentSwf, event) {
+    // First Play Rules
+    if(event === 'playing' && player.tech.firstplay === false) {
+      videojs.log('OSMF', 'Event', currentSwf, 'loadstart');
+      player.trigger('loadstart');
+      player.tech.loadstart = true;
+
+      videojs.log('OSMF', 'Event', currentSwf, 'firstplay');
+      player.trigger('firstplay');
+      player.tech.firstplay = true;
+    }
+
+    // Mux the ready event here {OSMF vs. VJS/HTML5}
+    if(event === 'ready') {
+      event = 'loadeddata';
+    }
+
+    // Fire via Flash tech
+    videojs.Flash.onEvent(currentSwf, event);
+
+    // Logging if not a timeupdate
     if(event!=='timeupdate') {
       videojs.log('OSMF', 'Event', currentSwf, event);
     }
-    videojs.Flash.onEvent(currentSwf, event);
   };
 //
+
   videojs.Osmf.prototype.supportsFullScreen = function () {
     return false; // Flash does not allow fullscreen through javascript
   };

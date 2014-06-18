@@ -137,16 +137,10 @@ public class VideoJSOSMF extends Sprite {
     }
   }
 
-  private function dispatchExternalEvent(type:String, data:Object = null):void {
-    if (loaderInfo.parameters['eventProxyFunction']) {
-      ExternalInterface.call(loaderInfo.parameters['eventProxyFunction'], ExternalInterface.objectID, type);
-    }
-  }
-
   private function createMediaPlayer():void {
     Console.log('Create MediaPlayer');
     _mediaPlayer = new MediaPlayer();
-    _mediaPlayer.autoPlay = loaderInfo.parameters['autoplay'];
+    _mediaPlayer.autoPlay = false;
     _mediaPlayer.autoRewind = false;
     _mediaPlayer.loop = false;
     _mediaPlayer.currentTimeUpdateInterval = 100;
@@ -275,11 +269,7 @@ public class VideoJSOSMF extends Sprite {
     Console.log('onMediaPlayerStateChangeEvent', event.toString());
     switch (event.state) {
       case MediaPlayerState.PLAYING:
-        dispatchExternalEvent('play');
-        if(!_firstPlayTriggered){
-          _firstPlayTriggered = true;
-          dispatchExternalEvent('firstplay');
-        }
+        dispatchExternalEvent('playing');
         break;
       case MediaPlayerState.PAUSED:
         dispatchExternalEvent('pause');
@@ -301,6 +291,11 @@ public class VideoJSOSMF extends Sprite {
 
   private function onSeekEvent(event:SeekEvent):void {
     Console.log('onSeekEvent', event.toString());
+    if(event.seeking) {
+      dispatchExternalEvent('seek');
+    } else {
+      dispatchExternalEvent('seeked');
+    }
   }
 
   private function onTimeEvent(event:TimeEvent):void {
@@ -321,10 +316,20 @@ public class VideoJSOSMF extends Sprite {
 
   private function onLoadEvent(event:LoadEvent):void {
     Console.log('onLoadEvent', event.toString());
+    switch(event.type) {
+      case LoadEvent.LOAD_STATE_CHANGE:
+        dispatchExternalEvent(event.loadState);
+        break;
+    }
   }
 
   private function onPlayEvent(event:PlayEvent):void {
     Console.log('onPlayEvent', event.toString());
+    switch(event.type) {
+      case PlayEvent.PLAY_STATE_CHANGE:
+        dispatchExternalEvent(event.playState);
+        break;
+    }
   }
 
   private function onDisplayObjectEvent(event:DisplayObjectEvent):void {
@@ -342,6 +347,7 @@ public class VideoJSOSMF extends Sprite {
 
   private function onMediaErrorEvent(event:MediaErrorEvent):void {
     Console.log('onMediaErrorEvent', event.toString());
+    dispatchExternalErrorEvent(event.type, event.error);
   }
 
   private function onLayoutTargetEvent(event:LayoutTargetEvent):void {
@@ -353,6 +359,7 @@ public class VideoJSOSMF extends Sprite {
     switch (event.type) {
       case MediaElementEvent.METADATA_ADD:
         Console.log('MetaData Add', event.metadata);
+        dispatchExternalEvent('loadedmetadata');
         break;
 
       case MediaElementEvent.METADATA_REMOVE:
@@ -372,8 +379,6 @@ public class VideoJSOSMF extends Sprite {
           Console.log(dt.mediaWidth, 'x', dt.mediaHeight);
           break;
         }
-
-
         break;
 
       case MediaElementEvent.TRAIT_REMOVE:
@@ -395,7 +400,6 @@ public class VideoJSOSMF extends Sprite {
     createResource(src);
     createMediaFactory();
     createLayoutMetadata();
-    createMediaPlayer();
     createMediaContainer();
     createMediaElement();
 
@@ -519,6 +523,7 @@ public class VideoJSOSMF extends Sprite {
 
   private function onPlayCalled():void {
     Console.log('Play called on OSMF');
+    dispatchExternalEvent('play');
     _mediaPlayer.play();
   }
 
@@ -539,5 +544,18 @@ public class VideoJSOSMF extends Sprite {
   private function onStopCalled():void {
 
   }
+
+  // VideoJS Notifications
+  private function dispatchExternalEvent(type:String, data:Object = null):void {
+    if (loaderInfo.parameters['eventProxyFunction']) {
+      ExternalInterface.call(loaderInfo.parameters['eventProxyFunction'], ExternalInterface.objectID, type);
+    }
+  }
+  private function dispatchExternalErrorEvent(type:String, error:Object):void {
+    if(loaderInfo.parameters['errorProxyFunction']) {
+      ExternalInterface.call(loaderInfo.parameters['errorProxyFunction'], ExternalInterface.objectID, type, error);
+    }
+  }
+
 }
 }
