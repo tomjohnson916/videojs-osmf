@@ -12,12 +12,16 @@
        class="video-js vjs-default-skin"
        height="540"
        width="960"
-       poster="http://assets1.ignimgs.com/vid/thumbnails/user/2014/06/02/20823568_ultrasf4_060214_1280_grande.jpg"
        controls>
   <source
-    src="http://bcqaus-vh.akamaihd.net/z/1910141515001/201406/1910141515001_3638100632001_TC-build-297-95e1558c-4de4-4b1f-b2c1-a7a564da038eMPEG-4-AVC-AAC0040005021270-32187b1e8f64c3cf.mp4.f4m/manifest.f4m?hdcore"
+    src="http://absassets.ign.com/z/assets.ign.com/videos/zencoder/,416/bbc9e960b4ccce9f7314f4f6c828cce8-110000,640/bbc9e960b4ccce9f7314f4f6c828cce8-1000000,960/bbc9e960b4ccce9f7314f4f6c828cce8-1500000,1280/bbc9e960b4ccce9f7314f4f6c828cce8-3000000,1920/bbc9e960b4ccce9f7314f4f6c828cce8-5000000,-1402129217-w.mp4.csmil/manifest.f4m?hdcore&b=200-"
     type="application/adobe-f4m">
 </video>
+<h1>HDS/DASH Source Switch</h1>
+<select id="url-select">
+  <option selected value="http://absassets.ign.com/z/assets.ign.com/videos/zencoder/,416/bbc9e960b4ccce9f7314f4f6c828cce8-110000,640/bbc9e960b4ccce9f7314f4f6c828cce8-1000000,960/bbc9e960b4ccce9f7314f4f6c828cce8-1500000,1280/bbc9e960b4ccce9f7314f4f6c828cce8-3000000,1920/bbc9e960b4ccce9f7314f4f6c828cce8-5000000,-1402129217-w.mp4.csmil/manifest.f4m?hdcore&b=200-">Akamai HD2 HDS Example [http://assets.ign.com/bbc9e960b4ccce9f7314f4f6c828cce8-5000000,-1402129217-w.mp4.csmil/manifest.f4m]</option>
+  <option value="http://dashas.castlabs.com/videos/bytes/bbb/Manifest.mpd">DASH.as Example [http://dashas.castlabs.com/videos/bytes/bbb/Manifest.mpd]</option>
+</select>
 <script>
   // Akamai SRC
   // DRM - http://bcqaus-vh.akamaihd.net/z/1910141515001/201406/1910141515001_3638100632001_TC-build-297-95e1558c-4de4-4b1f-b2c1-a7a564da038eMPEG-4-AVC-AAC0040005021270-32187b1e8f64c3cf.mp4.f4m/manifest.f4m
@@ -30,6 +34,16 @@
   videojs.options.osmf.swf = 'dist/videojs-osmf.swf';
   // Initialize the player
   var player = videojs('vid1');
+  var select = document.querySelector('select');
+  select.addEventListener('change', function(e) {
+    console.log('i changed', e.target.value);
+    player.pause();
+    player.src(e.target.value);
+    player.one('loadeddata', function() {
+      console.log('--- start');
+      player.play();
+    })
+  })
 </script>
 </body>
 </html>
