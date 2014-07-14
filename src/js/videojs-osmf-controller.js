@@ -140,7 +140,7 @@ videojs.Osmf.prototype.streamStatus = function() {
     // If autoplay, go
     if(player.options().autoplay) {
       player.play();
-    } else {
+    } else if(player.options().preload) {
       player.currentTime(0);
       player.play();
       player.pause();

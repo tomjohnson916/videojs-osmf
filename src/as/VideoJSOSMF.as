@@ -13,6 +13,7 @@ import flash.ui.ContextMenuItem;
 import org.osmf.containers.MediaContainer;
 import org.osmf.events.AudioEvent;
 import org.osmf.events.BufferEvent;
+import org.osmf.events.DRMEvent;
 import org.osmf.events.DisplayObjectEvent;
 import org.osmf.events.DynamicStreamEvent;
 import org.osmf.events.LoadEvent;
@@ -175,6 +176,7 @@ public class VideoJSOSMF extends Sprite {
     _mediaPlayer.addEventListener(DynamicStreamEvent.NUM_DYNAMIC_STREAMS_CHANGE, onDynamicStreamEvent);
     _mediaPlayer.addEventListener(DynamicStreamEvent.SWITCHING_CHANGE, onDynamicStreamEvent);
     _mediaPlayer.addEventListener(MediaErrorEvent.MEDIA_ERROR, onMediaErrorEvent);
+    _mediaPlayer.addEventListener(DRMEvent.DRM_STATE_CHANGE, onDRMEvent);
   }
 
   private function createMediaElement():void {
@@ -198,7 +200,7 @@ public class VideoJSOSMF extends Sprite {
   private function createLayoutMetadata():void {
     Console.log('Create LayoutMetadata');
     _layoutMetadata = new LayoutMetadata();
-    _layoutMetadata.scaleMode = ScaleMode.STRETCH;
+    _layoutMetadata.scaleMode = ScaleMode.LETTERBOX;
     _layoutMetadata.percentWidth = 100;
     _layoutMetadata.percentHeight = 100;
     _layoutMetadata.verticalAlign = VerticalAlign.MIDDLE;
@@ -353,6 +355,11 @@ public class VideoJSOSMF extends Sprite {
   private function onMediaErrorEvent(event:MediaErrorEvent):void {
     Console.log('onMediaErrorEvent', event.toString());
     dispatchExternalErrorEvent(event.type, event.error);
+  }
+
+  private function onDRMEvent(event:DRMEvent):void {
+    Console.log('onDRMEvent', event.drmState);
+    Console.log(event.toString());
   }
 
   private function onLayoutTargetEvent(event:LayoutTargetEvent):void {
