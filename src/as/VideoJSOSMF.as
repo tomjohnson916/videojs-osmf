@@ -365,7 +365,7 @@ public class VideoJSOSMF extends Sprite {
   }
 
   private function onMediaErrorEvent(event:MediaErrorEvent):void {
-    Console.log('onMediaErrorEvent', event.toString());
+    Console.log('onMediaErrorEvent', event.error.name, event.error.detail, event.error.errorID, event.error.message);
     dispatchExternalErrorEvent(event.type, event.error);
   }
 
@@ -421,7 +421,7 @@ public class VideoJSOSMF extends Sprite {
      5. Create Container
      6. Create Element
      */
-    dispose();
+    //dispose();
     createResource(src);
     createMediaFactory();
     createLayoutMetadata();
@@ -431,6 +431,7 @@ public class VideoJSOSMF extends Sprite {
     _mediaPlayer.media = _contentMediaElement;
   }
 
+  /* Not sure if I want this here or in the tech
   private function dispose():void {
     if(_mediaPlayer && _mediaPlayer.media) {
       _mediaPlayer.media = null;
@@ -441,6 +442,7 @@ public class VideoJSOSMF extends Sprite {
     if(_layoutMetadata) _layoutMetadata = null;
     if(_mediaContainer) _mediaContainer = null;
   }
+  */
 
   private function onAbortCalled(src:String):void {
 
