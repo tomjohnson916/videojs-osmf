@@ -12,24 +12,59 @@
        class="video-js vjs-default-skin"
        height="540"
        width="960"
-       poster="http://assets1.ignimgs.com/vid/thumbnails/user/2014/06/02/20823568_ultrasf4_060214_1280_grande.jpg"
        controls>
-  <source
-    src="http://bcqaus-vh.akamaihd.net/z/1910141515001/201406/1910141515001_3638100632001_TC-build-297-95e1558c-4de4-4b1f-b2c1-a7a564da038eMPEG-4-AVC-AAC0040005021270-32187b1e8f64c3cf.mp4.f4m/manifest.f4m?hdcore"
-    type="application/adobe-f4m">
+  <source src="http://absassets.ign.com/z/assets.ign.com/videos/zencoder/,416/bbc9e960b4ccce9f7314f4f6c828cce8-110000,640/bbc9e960b4ccce9f7314f4f6c828cce8-1000000,960/bbc9e960b4ccce9f7314f4f6c828cce8-1500000,1280/bbc9e960b4ccce9f7314f4f6c828cce8-3000000,1920/bbc9e960b4ccce9f7314f4f6c828cce8-5000000,-1402129217-w.mp4.csmil/manifest.f4m?hdcore&b=200-" type="application/adobe-f4m">
 </video>
+<h1>HDS/DASH Source Switch</h1>
+<select id="url-select">
+  <option selected data-mime="application/adobe-f4m" data-url="http://absassets.ign.com/z/assets.ign.com/videos/zencoder/,416/bbc9e960b4ccce9f7314f4f6c828cce8-110000,640/bbc9e960b4ccce9f7314f4f6c828cce8-1000000,960/bbc9e960b4ccce9f7314f4f6c828cce8-1500000,1280/bbc9e960b4ccce9f7314f4f6c828cce8-3000000,1920/bbc9e960b4ccce9f7314f4f6c828cce8-5000000,-1402129217-w.mp4.csmil/manifest.f4m?hdcore&b=200-">Akamai HD2 HDS Example</option>
+  <option data-mime="application/dash+xml" data-url="http://dashas.castlabs.com/videos/bytes/bbb/Manifest.mpd">DASH.as Example</option>
+</select>
+<button>load</button>
 <script>
+  // http://dashdemo.edgesuite.net/envivio/dashpr/clear/Manifest.mpd
+  // http://dashas.castlabs.com/videos/bytes/bbb/Manifest.mpd
+
   // Akamai SRC
   // DRM - http://bcqaus-vh.akamaihd.net/z/1910141515001/201406/1910141515001_3638100632001_TC-build-297-95e1558c-4de4-4b1f-b2c1-a7a564da038eMPEG-4-AVC-AAC0040005021270-32187b1e8f64c3cf.mp4.f4m/manifest.f4m
-  //http://multiplatform-f.akamaihd.net/z/multi/companion/bourne_ultimatum/The Bourne Ultimatum - Trailer_,1000,1500,2500,4000,k.mp4.csmil/manifest.f4m?hdcore
-  //IGN SRC
-  //http://absassets.ign.com/z/assets.ign.com/videos/zencoder/,416/bbc9e960b4ccce9f7314f4f6c828cce8-110000,640/bbc9e960b4ccce9f7314f4f6c828cce8-1000000,960/bbc9e960b4ccce9f7314f4f6c828cce8-1500000,1280/bbc9e960b4ccce9f7314f4f6c828cce8-3000000,1920/bbc9e960b4ccce9f7314f4f6c828cce8-5000000,-1402129217-w.mp4.csmil/manifest.f4m?hdcore&b=200-
+  // http://multiplatform-f.akamaihd.net/z/multi/companion/bourne_ultimatum/The Bourne Ultimatum - Trailer_,1000,1500,2500,4000,k.mp4.csmil/manifest.f4m?hdcore
+  // IGN SRC
+  // http://absassets.ign.com/z/assets.ign.com/videos/zencoder/,416/bbc9e960b4ccce9f7314f4f6c828cce8-110000,640/bbc9e960b4ccce9f7314f4f6c828cce8-1000000,960/bbc9e960b4ccce9f7314f4f6c828cce8-1500000,1280/bbc9e960b4ccce9f7314f4f6c828cce8-3000000,1920/bbc9e960b4ccce9f7314f4f6c828cce8-5000000,-1402129217-w.mp4.csmil/manifest.f4m?hdcore&b=200-
   // Set Regular VideoJS SWF
   videojs.options.flash.swf = 'node_modules/video.js/dist/video-js/video-js.swf';
   // Set OSMF SWF
   videojs.options.osmf.swf = 'dist/videojs-osmf.swf';
   // Initialize the player
   var player = videojs('vid1');
+  var select = document.querySelector('select');
+  var button = document.querySelector('button');
+  var selected = {
+    type: select.selectedOptions[0].dataset.mime,
+    src: select.selectedOptions[0].dataset.url
+  };
+
+  select.addEventListener('change', function(e) {
+    player.pause();
+
+    for(var o in e.target.options) {
+      if(e.target.options[o].selected){
+        selected = {
+          type: e.target.options[o].dataset.mime,
+          src: e.target.options[o].dataset.url
+        };
+        console.log(selected);
+      }
+    }
+  });
+
+  button.addEventListener('click', function(e) {
+    player.one('loadeddata', function() {
+      console.log('--- start');
+      player.play();
+    });
+    console.log('set src', selected);
+    player.src(selected);
+  })
 </script>
 </body>
 </html>

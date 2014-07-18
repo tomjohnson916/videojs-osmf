@@ -43,6 +43,9 @@ import org.osmf.traits.TimeTrait;
 import org.osmf.utils.TimeUtil;
 import org.osmf.utils.Version;
 
+CONFIG::DASH
+import com.castlabs.dash.DashPluginInfo;
+
 /*
   TODO: Player should be first on this one.
   [Player]
@@ -70,8 +73,6 @@ public class VideoJSOSMF extends Sprite {
   private var _mediaContainer:MediaContainer;
   private var _mediaFactory:MediaFactory;
   private var _resource:StreamingURLResource;
-
-  private var _firstPlayTriggered:Boolean;
 
   public function VideoJSOSMF() {
     initializeContextMenu();
@@ -249,11 +250,22 @@ public class VideoJSOSMF extends Sprite {
     _mediaFactory.addEventListener(MediaFactoryEvent.MEDIA_ELEMENT_CREATE, onMediaFactoryEvent);
     _mediaFactory.addEventListener(MediaFactoryEvent.PLUGIN_LOAD, onMediaFactoryEvent);
     _mediaFactory.addEventListener(MediaFactoryEvent.PLUGIN_LOAD_ERROR, onMediaFactoryEvent);
+
+    if(CONFIG::DASH && CONFIG::DASH == true) _mediaFactory.addItem(new DashPluginInfo().getMediaFactoryItemAt(0));
+
   }
 
   private function onMediaFactoryEvent(event:MediaFactoryEvent):void {
     Console.log('onMediaFactoryEvent', event.toString());
     switch (event.type) {
+      case MediaFactoryEvent.PLUGIN_LOAD:
+        Console.log("--- Plugin Loaded");
+        break;
+
+      case MediaFactoryEvent.PLUGIN_LOAD_ERROR:
+        Console.log("--- Plugin Error");
+        break;
+
       case MediaFactoryEvent.MEDIA_ELEMENT_CREATE:
         break;
 
@@ -353,7 +365,7 @@ public class VideoJSOSMF extends Sprite {
   }
 
   private function onMediaErrorEvent(event:MediaErrorEvent):void {
-    Console.log('onMediaErrorEvent', event.toString());
+    Console.log('onMediaErrorEvent', event.error.name, event.error.detail, event.error.errorID, event.error.message);
     dispatchExternalErrorEvent(event.type, event.error);
   }
 
@@ -409,6 +421,7 @@ public class VideoJSOSMF extends Sprite {
      5. Create Container
      6. Create Element
      */
+    //dispose();
     createResource(src);
     createMediaFactory();
     createLayoutMetadata();
@@ -417,6 +430,19 @@ public class VideoJSOSMF extends Sprite {
 
     _mediaPlayer.media = _contentMediaElement;
   }
+
+  /* Not sure if I want this here or in the tech
+  private function dispose():void {
+    if(_mediaPlayer && _mediaPlayer.media) {
+      _mediaPlayer.media = null;
+    }
+    if(_resource) _resource = null;
+    if(_contentMediaElement) _contentMediaElement = null;
+    if(_mediaFactory) _mediaFactory = null;
+    if(_layoutMetadata) _layoutMetadata = null;
+    if(_mediaContainer) _mediaContainer = null;
+  }
+  */
 
   private function onAbortCalled(src:String):void {
 

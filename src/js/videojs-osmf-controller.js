@@ -40,7 +40,8 @@
 
   videojs.Osmf.formats = {
     'application/adobe-f4m': 'F4M',
-    'application/adobe-f4v': 'F4V'
+    'application/adobe-f4v': 'F4V',
+    'application/dash+xml': 'MPD'
   };
 
 //

@@ -10,7 +10,7 @@ module.exports = function(grunt) {
     },
     shell: {
       mxmlc: {
-        command: './compiler/bin/mxmlc -define+=CONFIG::VERSION,1 -define+=CONFIG::FLASH_10_1,true -define+=CONFIG::LOGGING,true -define+=CONFIG::PLATFORM,true -define+=CONFIG::MOCK,false -library-path+=libs/ <%= swf.src %> -o <%= swf.dest %>',
+        command: './compiler/bin/mxmlc -define+=CONFIG::VERSION,1 -define+=CONFIG::FLASH_10_1,true -define+=CONFIG::LOGGING,true -define+=CONFIG::PLATFORM,true -define+=CONFIG::MOCK,false -define+=CONFIG::DASH,true -library-path+=libs/ <%= swf.src %> -o <%= swf.dest %>',
         options: {
           callback: function (err, stdout, stderr, cb) {
             if (err) {
