@@ -148,7 +148,7 @@ videojs.Osmf.prototype.streamStatus = function() {
       player.bigPlayButton.show();
       player.bigPlayButton.one('click', function() {
         player.bigPlayButton.hide();
-      })
+      });
     }
   };
 
@@ -181,6 +181,8 @@ videojs.Osmf.prototype.streamStatus = function() {
   };
 
   videojs.Osmf.onEvent = function (currentSwf, event) {
+    var player = vjs.el(currentSwf)['player'];
+
     // First Play Rules
     if(event === 'playing' && player.tech.firstplay === false) {
       videojs.log('OSMF', 'Event', currentSwf, 'loadstart');
@@ -192,7 +194,11 @@ videojs.Osmf.prototype.streamStatus = function() {
       player.tech.firstplay = true;
     }
 
-    // Mux the ready event here {OSMF vs. VJS/HTML5}
+    // Mux events here {OSMF vs. VJS/HTML5}
+    if (event === 'buffering') {
+        event = 'waiting';
+    }
+
     if(event === 'ready') {
       event = 'loadeddata';
     }
