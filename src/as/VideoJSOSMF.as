@@ -561,14 +561,18 @@ public class VideoJSOSMF extends Sprite {
 
   private function onPlayCalled():void {
     Console.log('Play called on OSMF');
-    dispatchExternalEvent('play');
-    _mediaPlayer.play();
+    if (_mediaPlayer.canPlay){
+      dispatchExternalEvent('play');
+      _mediaPlayer.play();
+    }
   }
 
   private function onPauseCalled():void {
     Console.log('Pause called on OSMF');
-    dispatchExternalEvent('pause');
-    _mediaPlayer.pause();
+    if (_mediaPlayer.canPause) {
+      dispatchExternalEvent('pause');
+      _mediaPlayer.pause();
+    }
   }
 
   private function onPausedCalled():Boolean {
