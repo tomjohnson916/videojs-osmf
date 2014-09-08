@@ -181,7 +181,7 @@ videojs.Osmf.prototype.streamStatus = function() {
   };
 
   videojs.Osmf.onEvent = function (currentSwf, event) {
-    var player = vjs.el(currentSwf)['player'];
+    var player = document.getElementById(currentSwf).player;
 
     // First Play Rules
     if(event === 'playing' && player.tech.firstplay === false) {
