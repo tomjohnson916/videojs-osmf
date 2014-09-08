@@ -162,16 +162,16 @@ videojs.Osmf.prototype.streamStatus = function() {
   videojs.Osmf.onReady = function (currentSwf) {
     videojs.log('OSMF', 'Ready', currentSwf);
 
-    // Set the tech element
-    this.el_ = document.getElementById(currentSwf);
-
     // Tell Flash tech we are ready
     videojs.Flash.onReady(currentSwf);
+
+    var player = document.getElementById(currentSwf).player;
+    var tech = player.tech;
 
     // Source known on ready rule (i.e. load it)
     if(player.currentSrc() &&
       player.currentSrc().length > 0) {
-      this.el_.vjs_src(player.currentSrc());
+      tech.el_.vjs_src(player.currentSrc());
     }
   };
 
