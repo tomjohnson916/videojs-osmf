@@ -394,13 +394,17 @@ public class VideoJSOSMF extends Sprite {
         Console.log('Trait Add', event.type, event.traitType);
         switch (event.traitType) {
           case MediaTraitType.TIME:
-          var tt:TimeTrait = _mediaPlayer.media.getTrait(MediaTraitType.TIME) as TimeTrait;
-          Console.log(tt.currentTime, TimeUtil.formatAsTimeCode(tt.duration));
+          if (_mediaPlayer.media.getTrait(MediaTraitType.TIME) != null) {
+            var tt:TimeTrait = _mediaPlayer.media.getTrait(MediaTraitType.TIME) as TimeTrait;
+            Console.log("time:", tt.currentTime, TimeUtil.formatAsTimeCode(tt.duration));
+          }
           break;
 
           case MediaTraitType.DISPLAY_OBJECT:
-          var dt:DisplayObjectTrait = _mediaPlayer.media.getTrait(MediaTraitType.DISPLAY_OBJECT) as DisplayObjectTrait;
-          Console.log(dt.mediaWidth, 'x', dt.mediaHeight);
+          if (_mediaPlayer.media.getTrait(MediaTraitType.DISPLAY_OBJECT) != null) {
+            var dt:DisplayObjectTrait = _mediaPlayer.media.getTrait(MediaTraitType.DISPLAY_OBJECT) as DisplayObjectTrait;
+            Console.log("media size:", dt.mediaWidth, 'x', dt.mediaHeight);
+          }
           break;
         }
         break;
