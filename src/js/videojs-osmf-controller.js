@@ -138,6 +138,7 @@ videojs.Osmf.prototype.streamStatus = function() {
 
 // Event Handlers
   videojs.Osmf.onLoadedData = function() {
+    var player = this;
     // If autoplay, go
     if(player.options().autoplay) {
       player.play();
@@ -153,6 +154,7 @@ videojs.Osmf.prototype.streamStatus = function() {
   };
 
   videojs.Osmf.onEnded = function() {
+    var player = this;
     if(player.options().loop) {
       player.currentTime(0);
     }
