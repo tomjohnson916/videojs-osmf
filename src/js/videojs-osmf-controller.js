@@ -87,11 +87,8 @@
     }
   })();
 
-//
-
-// TODO: Figure out rules of support.
   videojs.Osmf.isSupported = function () {
-    return true;
+    return vjs.Flash.version()[0] >= 10;
   };
 
 // TODO: Figure out rules of support.
