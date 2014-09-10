@@ -559,8 +559,8 @@ public class VideoJSOSMF extends Sprite {
     }
   }
 
-  private function onLoadCalled(src:String):void {
-    Console.log('Load called on OSMF', src);
+  private function onLoadCalled():void {
+    Console.log('Load called on OSMF');
   }
 
   private function onPlayCalled():void {
