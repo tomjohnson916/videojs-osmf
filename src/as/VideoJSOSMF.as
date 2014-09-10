@@ -568,6 +568,8 @@ public class VideoJSOSMF extends Sprite {
     if (_mediaPlayer.canPlay){
       dispatchExternalEvent('play');
       _mediaPlayer.play();
+    } else {
+      Console.log('Can\'t play!');
     }
   }
 
@@ -576,6 +578,8 @@ public class VideoJSOSMF extends Sprite {
     if (_mediaPlayer.canPause) {
       dispatchExternalEvent('pause');
       _mediaPlayer.pause();
+    } else {
+      Console.log('Can\'t pause!');
     }
   }
 
