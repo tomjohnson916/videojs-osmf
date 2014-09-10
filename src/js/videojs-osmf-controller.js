@@ -174,8 +174,25 @@ videojs.Osmf.prototype.streamStatus = function() {
   };
 
   videojs.Osmf.onError = function (currentSwf, err) {
+    var player = document.getElementById(currentSwf).player;
+
     videojs.log('OSMF', 'Error', err);
-    videojs.Flash.onError(currentSwf, err);
+
+    if (err == 'loaderror') {
+      err = 'srcnotfound';
+    }
+
+    if (player.options_.reconnectOnError && !player.tech.reconnecting_){
+      player.tech.reconnecting_ = true;
+      player.trigger("waiting");
+      setTimeout(function(){
+        player.src(player.currentSrc());
+        player.tech.reconnecting_ = false;
+        player.error(null);
+      }, 5000);
+    }
+
+    player.error({code:4, msg:""});
   };
 
   videojs.Osmf.onEvent = function (currentSwf, event) {
