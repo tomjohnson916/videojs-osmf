@@ -110,6 +110,10 @@ videojs.Osmf.prototype.play = function(){
   this.el_.vjs_play();
 };
 
+videojs.Osmf.prototype.load = function(){
+  this.el_.vjs_load();
+};
+
 videojs.Osmf.prototype.paused = function(){
   return this.el_.vjs_paused();
 };
