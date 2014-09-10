@@ -28,9 +28,8 @@
       };
 
       videojs.Flash.call(this, player, options, ready);
-      player.tech = this;
-      player.tech.firstplay = false;
-      player.tech.loadstart = false;
+      this.firstplay = false;
+      this.loadstart = false;
       player.on('loadeddata', videojs.Osmf.onLoadedData);
       player.on('ended', videojs.Osmf.onEnded);
 
