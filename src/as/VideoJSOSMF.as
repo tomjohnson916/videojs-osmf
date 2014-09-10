@@ -610,8 +610,8 @@ public class VideoJSOSMF extends Sprite {
     }
   }
   private function dispatchExternalErrorEvent(type:String, error:Object):void {
-    if(loaderInfo.parameters['errorProxyFunction']) {
-      ExternalInterface.call(loaderInfo.parameters['errorProxyFunction'], ExternalInterface.objectID, type.toLowerCase(), error);
+    if(loaderInfo.parameters['errorEventProxyFunction']) {
+      ExternalInterface.call(loaderInfo.parameters['errorEventProxyFunction'], ExternalInterface.objectID, type.toLowerCase(), error);
     }
   }
 
