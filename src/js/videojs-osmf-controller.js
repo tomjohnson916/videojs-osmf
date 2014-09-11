@@ -186,7 +186,7 @@ videojs.Osmf.prototype.streamStatus = function() {
       err = 'srcnotfound';
     }
 
-    if (player.options_.reconnectOnError && !player.tech.reconnecting_){
+    if (player.tech.options_.reconnectOnError && !player.tech.reconnecting_){
       player.tech.reconnecting_ = true;
       player.trigger("waiting");
       setTimeout(function(){
