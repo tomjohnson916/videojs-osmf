@@ -394,13 +394,17 @@ public class VideoJSOSMF extends Sprite {
         Console.log('Trait Add', event.type, event.traitType);
         switch (event.traitType) {
           case MediaTraitType.TIME:
-          var tt:TimeTrait = _mediaPlayer.media.getTrait(MediaTraitType.TIME) as TimeTrait;
-          Console.log(tt.currentTime, TimeUtil.formatAsTimeCode(tt.duration));
+          if (_mediaPlayer.media.getTrait(MediaTraitType.TIME) != null) {
+            var tt:TimeTrait = _mediaPlayer.media.getTrait(MediaTraitType.TIME) as TimeTrait;
+            Console.log("time:", tt.currentTime, TimeUtil.formatAsTimeCode(tt.duration));
+          }
           break;
 
           case MediaTraitType.DISPLAY_OBJECT:
-          var dt:DisplayObjectTrait = _mediaPlayer.media.getTrait(MediaTraitType.DISPLAY_OBJECT) as DisplayObjectTrait;
-          Console.log(dt.mediaWidth, 'x', dt.mediaHeight);
+          if (_mediaPlayer.media.getTrait(MediaTraitType.DISPLAY_OBJECT) != null) {
+            var dt:DisplayObjectTrait = _mediaPlayer.media.getTrait(MediaTraitType.DISPLAY_OBJECT) as DisplayObjectTrait;
+            Console.log("media size:", dt.mediaWidth, 'x', dt.mediaHeight);
+          }
           break;
         }
         break;
@@ -555,20 +559,28 @@ public class VideoJSOSMF extends Sprite {
     }
   }
 
-  private function onLoadCalled(src:String):void {
-    Console.log('Load called on OSMF', src);
+  private function onLoadCalled():void {
+    Console.log('Load called on OSMF');
   }
 
   private function onPlayCalled():void {
     Console.log('Play called on OSMF');
-    dispatchExternalEvent('play');
-    _mediaPlayer.play();
+    if (_mediaPlayer.canPlay){
+      dispatchExternalEvent('play');
+      _mediaPlayer.play();
+    } else {
+      Console.log('Can\'t play!');
+    }
   }
 
   private function onPauseCalled():void {
     Console.log('Pause called on OSMF');
-    dispatchExternalEvent('pause');
-    _mediaPlayer.pause();
+    if (_mediaPlayer.canPause) {
+      dispatchExternalEvent('pause');
+      _mediaPlayer.pause();
+    } else {
+      Console.log('Can\'t pause!');
+    }
   }
 
   private function onPausedCalled():Boolean {
@@ -598,8 +610,8 @@ public class VideoJSOSMF extends Sprite {
     }
   }
   private function dispatchExternalErrorEvent(type:String, error:Object):void {
-    if(loaderInfo.parameters['errorProxyFunction']) {
-      ExternalInterface.call(loaderInfo.parameters['errorProxyFunction'], ExternalInterface.objectID, type.toLowerCase(), error);
+    if(loaderInfo.parameters['errorEventProxyFunction']) {
+      ExternalInterface.call(loaderInfo.parameters['errorEventProxyFunction'], ExternalInterface.objectID, type.toLowerCase(), error);
     }
   }
 

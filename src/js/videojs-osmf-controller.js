@@ -28,9 +28,8 @@
       };
 
       videojs.Flash.call(this, player, options, ready);
-      player.tech = this;
-      player.tech.firstplay = false;
-      player.tech.loadstart = false;
+      this.firstplay = false;
+      this.loadstart = false;
       player.on('loadeddata', videojs.Osmf.onLoadedData);
       player.on('ended', videojs.Osmf.onEnded);
 
@@ -88,11 +87,8 @@
     }
   })();
 
-//
-
-// TODO: Figure out rules of support.
   videojs.Osmf.isSupported = function () {
-    return true;
+    return vjs.Flash.version()[0] >= 10;
   };
 
 // TODO: Figure out rules of support.
@@ -112,6 +108,10 @@
 
 videojs.Osmf.prototype.play = function(){
   this.el_.vjs_play();
+};
+
+videojs.Osmf.prototype.load = function(){
+  this.el_.vjs_load();
 };
 
 videojs.Osmf.prototype.paused = function(){
@@ -138,6 +138,7 @@ videojs.Osmf.prototype.streamStatus = function() {
 
 // Event Handlers
   videojs.Osmf.onLoadedData = function() {
+    var player = this;
     // If autoplay, go
     if(player.options().autoplay) {
       player.play();
@@ -153,6 +154,7 @@ videojs.Osmf.prototype.streamStatus = function() {
   };
 
   videojs.Osmf.onEnded = function() {
+    var player = this;
     if(player.options().loop) {
       player.currentTime(0);
     }
@@ -162,26 +164,43 @@ videojs.Osmf.prototype.streamStatus = function() {
   videojs.Osmf.onReady = function (currentSwf) {
     videojs.log('OSMF', 'Ready', currentSwf);
 
-    // Set the tech element
-    this.el_ = document.getElementById(currentSwf);
-
     // Tell Flash tech we are ready
     videojs.Flash.onReady(currentSwf);
+
+    var player = document.getElementById(currentSwf).player;
+    var tech = player.tech;
 
     // Source known on ready rule (i.e. load it)
     if(player.currentSrc() &&
       player.currentSrc().length > 0) {
-      this.el_.vjs_src(player.currentSrc());
+      tech.el_.vjs_src(player.currentSrc());
     }
   };
 
   videojs.Osmf.onError = function (currentSwf, err) {
+    var player = document.getElementById(currentSwf).player;
+
     videojs.log('OSMF', 'Error', err);
-    videojs.Flash.onError(currentSwf, err);
+
+    if (err == 'loaderror') {
+      err = 'srcnotfound';
+    }
+
+    if (player.tech.options_.reconnectOnError && !player.tech.reconnecting_){
+      player.tech.reconnecting_ = true;
+      player.trigger("waiting");
+      setTimeout(function(){
+        player.src(player.currentSrc());
+        player.tech.reconnecting_ = false;
+        player.error(null);
+      }, 5000);
+    }
+
+    player.error({code:4, msg:""});
   };
 
   videojs.Osmf.onEvent = function (currentSwf, event) {
-    var player = vjs.el(currentSwf)['player'];
+    var player = document.getElementById(currentSwf).player;
 
     // First Play Rules
     if(event === 'playing' && player.tech.firstplay === false) {
